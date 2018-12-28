@@ -5,6 +5,7 @@
       "ignoreUrls": true,
       "ignoreComments": false
     }],
+    "quotes": ["error", "single"],
     "node/exports-style": ["error", "module.exports"],
     "node/prefer-global/buffer": ["error", "always"],
     "node/prefer-global/console": ["error", "always"],

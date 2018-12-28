@@ -1,17 +1,17 @@
-const bodyParser = require("body-parser");
-const express = require("express");
-const graphqlHttp = require("express-graphql");
-const mongoose = require("mongoose");
+const bodyParser = require('body-parser');
+const express = require('express');
+const graphqlHttp = require('express-graphql');
+const mongoose = require('mongoose');
 
-const rootValue = require("./graphql/resolvers");
-const schema = require("./graphql/schema");
+const rootValue = require('./graphql/resolvers');
+const schema = require('./graphql/schema');
 
 const app = express();
 
 app.use(bodyParser.json());
 
 app.use(
-  "/graphql",
+  '/graphql',
   graphqlHttp({
     schema,
     rootValue,

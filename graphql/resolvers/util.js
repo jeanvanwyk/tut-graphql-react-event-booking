@@ -1,29 +1,30 @@
-const Event = require("../../models/event");
-const User = require("../../models/user");
+const { dateToString } = require('../../helpers/date');
+const Event = require('../../models/event');
+const User = require('../../models/user');
 
-const mapBooking = booking => ({
+const transformBooking = booking => ({
   ...booking._doc,
   _id: booking.id,
-  event: populateEvent.bind(this, booking._doc.event),
-  user: populateUser.bind(this, booking._doc.user),
-  createdAt: new Date(booking._doc.createdAt).toISOString(),
-  updatedAt: new Date(booking._doc.updatedAt).toISOString()
+  event: populateEvent.bind(this, booking.event),
+  user: populateUser.bind(this, booking.user),
+  createdAt: dateToString(booking.createdAt),
+  updatedAt: dateToString(booking.updatedAt)
 });
 
-const mapEvent = event => {
+const transformEvent = event => {
   return {
     ...event._doc,
     _id: event.id,
-    date: new Date(event._doc.date).toISOString(),
-    creator: populateUser.bind(this, event._doc.creator)
+    date: dateToString(event.date),
+    creator: populateUser.bind(this, event.creator)
   };
 };
 
-const mapUser = user => {
+const transformUser = user => {
   return {
     ...user._doc,
     _id: user.id,
-    createdEvents: populateEvents.bind(this, user._doc.createdEvents)
+    createdEvents: populateEvents.bind(this, user.createdEvents)
   };
 };
 
@@ -31,9 +32,9 @@ const populateEvent = async eventId => {
   try {
     const event = await Event.findById(eventId);
     if (!event) {
-      throw new Error("Event not found");
+      throw new Error('Event not found');
     }
-    return mapEvent(event);
+    return transformEvent(event);
   } catch (err) {
     throw err;
   }
@@ -43,7 +44,7 @@ const populateEvents = async eventIds => {
   try {
     const events = await Event.find({ _id: { $in: eventIds } });
     return events.map(event => {
-      return mapEvent(event);
+      return transformEvent(event);
     });
   } catch (err) {
     throw err;
@@ -53,14 +54,14 @@ const populateEvents = async eventIds => {
 const populateUser = async userId => {
   try {
     const user = await User.findById(userId);
-    return mapUser(user);
+    return transformUser(user);
   } catch (err) {
     throw err;
   }
 };
 
 module.exports = {
-  mapBooking,
-  mapEvent,
-  mapUser
+  transformBooking,
+  transformEvent,
+  transformUser
 };

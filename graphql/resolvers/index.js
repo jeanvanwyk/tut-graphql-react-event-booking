@@ -1,13 +1,9 @@
-const { bookEvent, bookings, cancelBooking } = require("./booking");
-const { createEvent, events } = require("./event");
-const { createUser, users } = require("./user");
+const bookingResolver = require('./booking');
+const eventResolver = require('./event');
+const userResolver = require('./user');
 
 module.exports = {
-  bookEvent,
-  bookings,
-  cancelBooking,
-  createEvent,
-  createUser,
-  events,
-  users
+  ...bookingResolver,
+  ...eventResolver,
+  ...userResolver
 };

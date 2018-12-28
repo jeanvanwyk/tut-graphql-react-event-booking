@@ -1,13 +1,13 @@
-const bcrypt = require("bcryptjs");
+const bcrypt = require('bcryptjs');
 
-const User = require("../../models/user");
-const { mapUser } = require("./util");
+const User = require('../../models/user');
+const { transformUser } = require('./util');
 
 const createUser = async args => {
   try {
     const existingUser = await User.findOne({ email: args.userInput.email });
     if (existingUser) {
-      throw new Error("User exists already!");
+      throw new Error('User exists already!');
     }
     const hashedPassword = bcrypt.hash(args.userInput.password, 12);
     const newUser = new User({
@@ -15,7 +15,7 @@ const createUser = async args => {
       password: hashedPassword
     });
     const result = await newUser.save();
-    return mapUser(result);
+    return transformUser(result);
   } catch (err) {
     throw err;
   }
@@ -25,7 +25,7 @@ const users = async () => {
   try {
     const users = await User.find();
     return users.map(user => {
-      return mapUser(user);
+      return transformUser(user);
     });
   } catch (err) {
     throw err;
