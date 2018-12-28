@@ -1,0 +1,31 @@
+{
+  "name": "graphql-react-event-booking",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "engines": {
+    "node": ">=8.3.0"
+  },
+  "scripts": {
+    "start": "nodemon app.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint app.js graphql/ models/",
+    "format": "prettier-eslint --write app.js graphql/**/*.js models/**/*.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.18.3",
+    "express": "^4.16.4",
+    "express-graphql": "^0.7.1",
+    "graphql": "^14.0.2",
+    "mongoose": "^5.4.0"
+  },
+  "devDependencies": {
+    "eslint": "^5.11.1",
+    "eslint-plugin-node": "^8.0.0",
+    "nodemon": "^1.18.9",
+    "prettier-eslint-cli": "^4.7.1"
+  }
+}
