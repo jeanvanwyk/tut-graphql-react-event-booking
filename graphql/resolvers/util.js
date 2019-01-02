@@ -24,6 +24,7 @@ const transformUser = user => {
   return {
     ...user._doc,
     _id: user.id,
+    password: null,
     createdEvents: populateEvents.bind(this, user.createdEvents)
   };
 };

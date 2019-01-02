@@ -13,18 +13,21 @@ const events = async () => {
   }
 };
 
-const createEvent = async args => {
+const createEvent = async (args, req) => {
+  if (!req.isAuth) {
+    throw new Error('Unauthenticated!');
+  }
   const event = new Event({
     title: args.eventInput.title,
     description: args.eventInput.description,
     price: +args.eventInput.price,
     date: new Date(args.eventInput.date),
-    creator: '5c1f3c5922f748dbecb28be4'
+    creator: req.userId
   });
   try {
     const result = await event.save();
     const createdEvent = transformEvent(result);
-    const creator = await User.findById('5c1f3c5922f748dbecb28be4');
+    const creator = await User.findById(req.userId);
     if (!creator) {
       throw new Error('User not found!');
     }

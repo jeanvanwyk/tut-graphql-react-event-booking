@@ -9,8 +9,8 @@
   "scripts": {
     "start": "nodemon app.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "eslint app.js graphql/ helpers/ models/",
-    "format": "prettier-eslint --write app.js graphql/**/*.js helpers/**/*.jsmodels/**/*.js"
+    "lint": "eslint app.js graphql/ helpers/ middleware/ models/",
+    "format": "prettier-eslint --write app.js graphql/**/*.js helpers/**/*.js middleware/**/*.js models/**/*.js"
   },
   "author": "",
   "license": "ISC",
@@ -20,6 +20,7 @@
     "express": "^4.16.4",
     "express-graphql": "^0.7.1",
     "graphql": "^14.0.2",
+    "jsonwebtoken": "^8.4.0",
     "mongoose": "^5.4.0"
   },
   "devDependencies": {
