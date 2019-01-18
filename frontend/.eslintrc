@@ -1,0 +1,89 @@
+{
+  "env": {
+    "browser": true,
+    "builtin": true,
+    "jasmine": true,
+    "jest": true,
+    "node": true
+  },
+  "extends": [
+    "standard",
+    "eslint:recommended"
+  ],
+  "plugins": [
+    "react"
+  ],
+  "rules": {
+    "react/display-name": "error",
+    "react/jsx-no-duplicate-props": "error",
+    "react/jsx-no-undef": "error",
+    "react/jsx-uses-react": "error",
+    "react/jsx-uses-vars": "error",
+    "react/no-deprecated": "error",
+    "react/no-direct-mutation-state": "error",
+    "react/no-find-dom-node": "error",
+    "react/no-is-mounted": "error",
+    "react/no-unknown-property": "error",
+    "react/no-unused-prop-types": "error",
+    "react/no-render-return-value": "error",
+    "react/prop-types": "error",
+    "react/react-in-jsx-scope": "error",
+    "react/require-render-return": "error",
+
+    "semi": ["error", "always"],
+    "object-shorthand": "error",
+    "object-curly-spacing": ["error", "always"],
+    "no-unused-vars": ["error", { "vars": "local", "args": "after-used" }],
+    "arrow-body-style": "error",
+    "comma-spacing": "error",
+    "padded-blocks": "error",
+    "space-infix-ops": "error",
+    "max-len": ["error", 120, 2, {
+      "ignoreUrls": true,
+      "ignoreComments": false
+    }],
+    "key-spacing": "error",
+    "no-else-return": "error",
+
+    "react/sort-prop-types": ["error", {
+      "ignoreCase": true,
+      "callbacksLast": false,
+      "requiredFirst": true
+    }],
+    "react/jsx-sort-props": ["error", {
+      "ignoreCase": true,
+      "callbacksLast": false,
+      "shorthandFirst": false,
+      "shorthandLast": true
+    }],
+    "react/self-closing-comp": ["error", {
+      "component": true,
+      "html": true
+    }],
+    "react/jsx-tag-spacing": ["error", {
+      "closingSlash": "never",
+      "beforeSelfClosing": "always",
+      "afterOpening": "never"
+    }],
+    "jsx-quotes": ["error", "prefer-double"],
+    "react/jsx-indent-props": ["error", 2],
+    "react/sort-comp": ["error", {
+      "order": [
+        "static-methods",
+        "lifecycle",
+        "/^on.+$/",
+        "/^(get|set)(?!(InitialState$|DefaultProps$|ChildContext$)).+$/",
+        "everything-else",
+        "/^render.+$/",
+        "render"
+      ]
+    }],
+    "react/jsx-wrap-multilines": "error",
+    "react/jsx-equals-spacing": ["error", "never"],
+    "react/jsx-no-bind": ["error", {
+      "allowArrowFunctions": false,
+      "allowBind": false
+    }],
+    "quotes": ["error", "single"]
+  }
+}
