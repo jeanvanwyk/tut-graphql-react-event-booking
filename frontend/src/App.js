@@ -1,12 +1,12 @@
-import React, { Component, Fragment } from "react";
-import { BrowserRouter, Redirect, Route, Switch } from "react-router-dom";
+import React, { Component, Fragment } from 'react';
+import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
 
-import AuthPage from "./pages/auth";
-import BookingsPage from "./pages/bookings";
-import EventsPage from "./pages/events";
-import MainNavigation from "./components/MainNavigation";
+import AuthPage from './pages/auth';
+import BookingsPage from './pages/bookings';
+import EventsPage from './pages/events';
+import MainNavigation from './components/MainNavigation';
 
-import "./App.css";
+import './App.css';
 
 class App extends Component {
   render() {

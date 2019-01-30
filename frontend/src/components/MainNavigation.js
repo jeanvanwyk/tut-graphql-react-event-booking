@@ -1,10 +1,9 @@
-import React from "react";
-import { NavLink } from "react-router-dom";
+import React from 'react';
+import { NavLink } from 'react-router-dom';
 
-import "./MainNavigation.css";
+import './MainNavigation.css';
 
-const MainNavigation = () => {
-  return (
+const MainNavigation = () => (
     <header className="main-navigation">
       <div className="main-navigation__logo">
         <h1>Easy Event</h1>
@@ -24,6 +23,5 @@ const MainNavigation = () => {
       </nav>
     </header>
   );
-};
 
 export default MainNavigation;
