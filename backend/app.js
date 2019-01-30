@@ -5,6 +5,9 @@ const mongoose = require('mongoose');
 
 const rootValue = require('./graphql/resolvers');
 const schema = require('./graphql/schema');
+// const altSchema = require('./graphql/schema/alternative');
+// const { printSchema } = require('graphql');
+// console.log('-----', printSchema(altSchema));
 const isAuth = require('./middleware/is-auth');
 
 const app = express();

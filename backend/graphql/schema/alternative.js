@@ -12,7 +12,7 @@ const {
 
 const Event = new GraphQLObjectType({
   name: 'Event',
-  fields:  () => ({
+  fields: () => ({
     _id: { type: new GraphQLNonNull(GraphQLID) },
     title: { type: new GraphQLNonNull(GraphQLString) },
     description: { type: new GraphQLNonNull(GraphQLString) },
@@ -120,4 +120,3 @@ module.exports = new GraphQLSchema({
   query: RootQuery,
   mutation: RootMutation
 });
-
