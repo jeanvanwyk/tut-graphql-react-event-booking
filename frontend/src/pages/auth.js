@@ -1,8 +1,12 @@
 import React, { Component } from 'react';
 
+import AuthContext from '../context/auth-context';
+
 import './auth.css';
 
 export class AuthPage extends Component {
+  static contextType = AuthContext;
+
   constructor(props) {
     super(props);
     this.emailEl = React.createRef();
@@ -65,9 +69,10 @@ export class AuthPage extends Component {
         }
         return res.json();
       })
-      .then(resBody => {
-        // eslint-disable-next-line no-console
-        console.log(resBody);
+      .then(resData => {
+        if (resData.data.login.token) {
+          this.context.login(resData.data.login.token, resData.data.login.userId, resData.data.login.tokenExpiration);
+        }
       })
       .catch(err => {
         // eslint-disable-next-line no-console
