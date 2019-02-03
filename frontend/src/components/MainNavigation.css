@@ -1,16 +1,19 @@
 .main-navigation {
   align-items: center;
-  background-color: #01d1d1;
+  background: #5101d1;
+  box-sizing: border-box;
   display: flex;
   height: 3.5rem;
+  justify-content: space-between;
   left: 0;
-  padding: 0 1rem;
+  padding: 0 2rem;
   position: fixed;
   top: 0;
   width: 100%;
 }
 
-.main-navigation__logo {
+.main-navigation__logo h1 {
+  color: #dfcefc;
   font-size: 1.5rem;
   margin: 0;
 }
@@ -22,8 +25,8 @@
 .main-navigation__items ul {
   align-items: center;
   display: flex;
-  margin: 0 0 0 1.5rem;
   list-style: none;
+  margin: 0;
   padding: 0;
 }
 
@@ -31,13 +34,25 @@
   margin: 0 1rem;
 }
 
-.main-navigation__items a {
+.main-navigation__items a,
+.main-navigation__items button {
+  background: transparent;
+  border: none;
+  color: white;
+  cursor: pointer;
+  font: inherit;
+  margin: 0;
+  padding: 0.25rem 0.5rem;
   text-decoration: none;
-  color: #000;
+  vertical-align: middle;
 }
 
-.main-navigation__items a.active,
 .main-navigation__items a:hover,
-.main-navigation__items a:active {
-  color: #fdefa0;
+.main-navigation__items a:active,
+.main-navigation__items a.active,
+.main-navigation__items button:hover,
+.main-navigation__items button:active {
+  background: #ffffff;
+  border-radius: 5px;
+  color: #5101d1;
 }
