@@ -13,7 +13,7 @@ export class AuthPage extends Component {
     this.passwordEl = React.createRef();
 
     this.state = {
-      isLogin: true,
+      isLogin: true
     };
     this.submitHandler = this.submitHandler.bind(this);
     this.switchModeHandler = this.switchModeHandler.bind(this);
@@ -41,7 +41,7 @@ export class AuthPage extends Component {
             token
             tokenExpiration
           }
-        }`,
+        }`
     };
 
     if (!this.state.isLogin) {
@@ -52,7 +52,7 @@ export class AuthPage extends Component {
               _id
               email
             }
-          }`,
+          }`
       };
     }
 
@@ -60,8 +60,8 @@ export class AuthPage extends Component {
       method: 'POST',
       body: JSON.stringify(requestBody),
       headers: {
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     })
       .then(res => {
         if (res.status !== 200 && res.status !== 201) {

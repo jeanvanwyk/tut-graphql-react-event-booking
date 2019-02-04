@@ -5,6 +5,7 @@
   position: fixed;
   top: 20vh;
   width: 90%;
+  z-index: 1;
 }
 
 .modal__header {

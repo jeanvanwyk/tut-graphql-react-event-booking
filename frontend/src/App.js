@@ -20,7 +20,7 @@ class App extends Component {
   state = {
     token: null,
     tokenExpiration: null,
-    userId: null,
+    userId: null
   };
 
   login(token, userId, tokenExpiration) {
@@ -40,7 +40,7 @@ class App extends Component {
             logout: this.logout,
             token: this.state.token,
             tokenExpiration: this.state.tokenExpiration,
-            userId: this.state.userId,
+            userId: this.state.userId
           }}
         >
           <MainNavigation />
@@ -52,7 +52,7 @@ class App extends Component {
               <Route component={EventsPage} path="/events" />
               {this.state.token && <Route component={BookingsPage} path="/bookings" />}
               {!this.state.token && <Redirect to="/auth" exact />}
-             </Switch>
+            </Switch>
           </main>
         </AuthContext.Provider>
       </BrowserRouter>

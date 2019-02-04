@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 
 import Backdrop from '../components/backdrop/Backdrop';
 import Modal from '../components/modal/Modal';
+import EventList from '../components/events/event-list/event-list';
+import Spinner from '../components/spinner/spinner';
 import AuthContext from '../context/auth-context';
 
 import './events.css';
@@ -17,22 +19,29 @@ export class EventsPage extends Component {
     this.dateEl = React.createRef();
     this.descriptionEl = React.createRef();
 
+    this.bookEventHandler = this.bookEventHandler.bind(this);
     this.fetchEvents = this.fetchEvents.bind(this);
     this.modalCancelHandler = this.modalCancelHandler.bind(this);
     this.modalConfirmHandler = this.modalConfirmHandler.bind(this);
+    this.showDetailHandler = this.showDetailHandler.bind(this);
     this.startCreateEventHandler = this.startCreateEventHandler.bind(this);
   }
 
   state = {
     creating: false,
-    events: []
+    events: [],
+    isLoading: false,
+    selectedEvent: null
   };
 
   componentDidMount() {
     this.fetchEvents();
   }
 
+  bookEventHandler() {}
+
   fetchEvents() {
+    this.setState({ isLoading: true });
     const requestBody = {
       query: `
         query {
@@ -56,7 +65,7 @@ export class EventsPage extends Component {
       body: JSON.stringify(requestBody),
       headers: {
         'Content-Type': 'application/json'
-      },
+      }
     })
       .then(res => {
         if (res.status !== 200 && res.status !== 201) {
@@ -66,12 +75,20 @@ export class EventsPage extends Component {
       })
       .then(resData => {
         const events = resData.data.events;
-        this.setState({ events });
+        this.setState({ events, isLoading: false });
       })
       .catch(err => {
+        this.setState({ isLoading: false });
         // eslint-disable-next-line no-console
         console.error(err);
       });
+  }
+
+  showDetailHandler(eventId) {
+    this.setState(prevState => {
+      const selectedEvent = prevState.events.find(event => event._id === eventId);
+      return { selectedEvent };
+    });
   }
 
   startCreateEventHandler() {
@@ -79,7 +96,7 @@ export class EventsPage extends Component {
   }
 
   modalCancelHandler() {
-    this.setState({ creating: false });
+    this.setState({ creating: false, selectedEvent: null });
   }
 
   modalConfirmHandler() {
@@ -89,27 +106,20 @@ export class EventsPage extends Component {
     const date = this.dateEl.current.value;
     const description = this.descriptionEl.current.value;
 
-    if (
-      title.trim().length === 0 ||
-      price <= 0 ||
-      date.trim().length === 0 ||
-      description.trim().length === 0
-    ) {
+    if (title.trim().length === 0 || price <= 0 || date.trim().length === 0 || description.trim().length === 0) {
       return;
     }
     const requestBody = {
       query: `
         mutation {
-          createEvent(eventInput: {title: "${title}", description: "${description}", price: ${price}, date: "${date}"}) {
+          createEvent(eventInput: {
+            title: "${title}", description: "${description}", price: ${price}, date: "${date}"
+          }) {
             _id
             title
             description
             price
             date
-            creator {
-              _id
-              email
-            }
           }
         }
       `
@@ -122,7 +132,7 @@ export class EventsPage extends Component {
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`
-      },
+      }
     })
       .then(res => {
         if (res.status !== 200 && res.status !== 201) {
@@ -131,8 +141,22 @@ export class EventsPage extends Component {
         return res.json();
       })
       .then(resData => {
-        console.log(resData);
-        this.fetchEvents();
+        this.setState(prevState => {
+          const updatedEvents = [
+            ...prevState.events,
+            {
+              _id: resData.data.createEvent._id,
+              title: resData.data.createEvent.title,
+              description: resData.data.createEvent.description,
+              price: resData.data.createEvent.price,
+              date: resData.data.createEvent.date,
+              creator: {
+                _id: this.context.userId
+              }
+            }
+          ];
+          return { events: updatedEvents };
+        });
       })
       .catch(err => {
         // eslint-disable-next-line no-console
@@ -141,10 +165,6 @@ export class EventsPage extends Component {
   }
 
   render() {
-    const eventsList = this.state.events.map(event => (
-      <li key={event._id} className="events__list-item">{event.title}</li>
-    ));
-
     return (
       <React.Fragment>
         {this.state.creating && (
@@ -178,17 +198,42 @@ export class EventsPage extends Component {
             </Modal>
           </React.Fragment>
         )}
+        {this.state.selectedEvent && (
+          <React.Fragment>
+            <Backdrop />
+            <Modal
+              confirmText="Book"
+              onCancel={this.modalCancelHandler}
+              onConfirm={this.bookEventHandler}
+              title={this.state.selectedEvent.title}
+              canCancel
+              canConfirm
+            >
+              <h1>{this.state.selectedEvent.title}</h1>
+              <h2>
+                ${this.state.selectedEvent.price} - {new Date(this.state.selectedEvent.date).toLocaleDateString()}
+              </h2>
+              <p>{this.state.selectedEvent.description}</p>
+            </Modal>
+          </React.Fragment>
+        )}
         {this.context.token && (
           <div className="events-control">
             <p>Share your own Events!</p>
             <button className="btn" onClick={this.startCreateEventHandler}>
               Create Event
-          </button>
+            </button>
           </div>
         )}
-        <ul className="events__list">
-          {eventsList}
-        </ul>
+        {this.state.isLoading ? (
+          <Spinner />
+        ) : (
+          <EventList
+            authUserId={this.context.userId}
+            events={this.state.events}
+            onViewDetail={this.showDetailHandler}
+          />
+        )}
       </React.Fragment>
     );
   }
