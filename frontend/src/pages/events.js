@@ -34,8 +34,6 @@ export class EventsPage extends Component {
     selectedEvent: null
   };
 
-  isActive = true;
-
   componentDidMount() {
     this.fetchEvents();
   }
@@ -43,6 +41,8 @@ export class EventsPage extends Component {
   componentWillUnmount() {
     this.isActive = false;
   }
+
+  isActive = true;
 
   bookEventHandler() {
     if (!this.context.token) {
@@ -76,8 +76,7 @@ export class EventsPage extends Component {
         }
         return res.json();
       })
-      .then(resData => {
-        console.log(resData);
+      .then(() => {
         this.setState({ selectedEvent: null });
       })
       .catch(err => {

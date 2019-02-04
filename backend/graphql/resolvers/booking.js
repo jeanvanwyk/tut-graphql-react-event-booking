@@ -7,7 +7,7 @@ const bookings = async (args, req) => {
     throw new Error('Unauthenticated!');
   }
   try {
-    const bookings = await Booking.find();
+    const bookings = await Booking.find({ user: req.userId });
     return bookings.map(booking => {
       return transformBooking(booking);
     });
@@ -27,7 +27,7 @@ const bookEvent = async (args, req) => {
     }
     const booking = new Booking({
       event: fetchedEvent,
-      user: '5c2d315029c76d27ac82ce95'
+      user: req.userId
     });
     const result = await booking.save();
     return transformBooking(result);
