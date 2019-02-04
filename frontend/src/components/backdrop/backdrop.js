@@ -1,6 +1,6 @@
 import React from 'react';
 
-import './Backdrop.css';
+import './backdrop.css';
 
 export const Backdrop = () => <div className="backdrop" />;
 

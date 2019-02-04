@@ -4,10 +4,10 @@ import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
 import AuthPage from './pages/auth';
 import BookingsPage from './pages/bookings';
 import EventsPage from './pages/events';
-import MainNavigation from './components/navigation/MainNavigation';
+import MainNavigation from './components/navigation/main-navigation';
 import AuthContext from './context/auth-context';
 
-import './App.css';
+import './app.css';
 
 class App extends Component {
   constructor(props) {

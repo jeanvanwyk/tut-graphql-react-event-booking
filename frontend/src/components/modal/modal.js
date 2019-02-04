@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import './Modal.css';
+import './modal.css';
 
 export const Modal = props => (
   <div className="modal">
