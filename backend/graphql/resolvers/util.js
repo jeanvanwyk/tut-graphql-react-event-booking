@@ -1,6 +1,16 @@
+const DataLoader = require('dataloader');
+
 const { dateToString } = require('../../helpers/date');
 const Event = require('../../models/event');
 const User = require('../../models/user');
+
+const eventLoader = new DataLoader(eventIds => {
+  return populateEvents(eventIds);
+});
+
+const userLoader = new DataLoader(userIds => {
+  return populateUsers(userIds);
+});
 
 const transformBooking = booking => ({
   ...booking._doc,
@@ -25,17 +35,17 @@ const transformUser = user => {
     ...user._doc,
     _id: user.id,
     password: null,
-    createdEvents: populateEvents.bind(this, user.createdEvents)
+    createdEvents: eventLoader.load.bind(this, user.createdEvents)
   };
 };
 
 const populateEvent = async eventId => {
   try {
-    const event = await Event.findById(eventId);
+    const event = await eventLoader.load(eventId.toString());
     if (!event) {
       throw new Error('Event not found');
     }
-    return transformEvent(event);
+    return event;
   } catch (err) {
     throw err;
   }
@@ -54,8 +64,22 @@ const populateEvents = async eventIds => {
 
 const populateUser = async userId => {
   try {
-    const user = await User.findById(userId);
-    return transformUser(user);
+    const user = await userLoader.load(userId.toString());
+    if (!user) {
+      throw new Error('User not found');
+    }
+    return user;
+  } catch (err) {
+    throw err;
+  }
+};
+
+const populateUsers = async userIds => {
+  try {
+    const users = await User.find({ _id: { $in: userIds } });
+    return users.map(user => {
+      return transformUser(user);
+    });
   } catch (err) {
     throw err;
   }
