@@ -35,7 +35,7 @@ const transformUser = user => {
     ...user._doc,
     _id: user.id,
     password: null,
-    createdEvents: eventLoader.load.bind(this, user.createdEvents)
+    createdEvents: () => eventLoader.loadMany(user.createdEvents)
   };
 };
 

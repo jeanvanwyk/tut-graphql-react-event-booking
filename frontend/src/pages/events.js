@@ -51,14 +51,16 @@ export class EventsPage extends Component {
     }
     const requestBody = {
       query: `
-        mutation {
-          bookEvent(eventId: "${this.state.selectedEvent._id}") {
+        mutation BookEvent($eventId: ID!) {
+          bookEvent(eventId: $eventId) {
             _id
             createdAt
             updatedAt
           }
-        }
-      `
+        }`,
+      variables: {
+        eventId: this.state.selectedEvent._id
+      }
     };
     const token = this.context.token;
 
@@ -101,8 +103,7 @@ export class EventsPage extends Component {
               email
             }
           }
-        }
-      `
+        }`
     };
 
     fetch('http://localhost:8000/graphql?query', {
@@ -159,18 +160,21 @@ export class EventsPage extends Component {
     }
     const requestBody = {
       query: `
-        mutation {
-          createEvent(eventInput: {
-            title: "${title}", description: "${description}", price: ${price}, date: "${date}"
-          }) {
+        mutation CreateEvent($title: String!, $description: String!, $price: Float!, $date: String!) {
+          createEvent(eventInput: { title: $title, description: $description, price: $price, date: $date }) {
             _id
             title
             description
             price
             date
           }
-        }
-      `
+        }`,
+      variables: {
+        title,
+        description,
+        price,
+        date
+      }
     };
     const token = this.context.token;
 
