@@ -54,6 +54,9 @@ const populateEvent = async eventId => {
 const populateEvents = async eventIds => {
   try {
     const events = await Event.find({ _id: { $in: eventIds } });
+    events.sort((a, b) => {
+      return eventIds.indexOf(a._id.toString()) - eventIds.indexOf(b._id.toString());
+    });
     return events.map(event => {
       return transformEvent(event);
     });
@@ -77,6 +80,9 @@ const populateUser = async userId => {
 const populateUsers = async userIds => {
   try {
     const users = await User.find({ _id: { $in: userIds } });
+    users.sort((a, b) => {
+      return userIds.indexOf(a._id.toString()) - userIds.indexOf(b._id.toString());
+    });
     return users.map(user => {
       return transformUser(user);
     });
