@@ -7,6 +7,25 @@ import AuthContext from '../context/auth-context';
 
 import './auth.css';
 
+const CREATE_USER = gql`
+  mutation CreateUser($email: String!, $password: String!) {
+    createUser(userInput: { email: $email, password: $password }) {
+      _id
+      email
+    }
+  }
+`;
+
+const LOGIN = gql`
+  query Login($email: String!, $password: String!) {
+    login(email: $email, password: $password) {
+      userId
+      token
+      tokenExpiration
+    }
+  }
+`;
+
 export class AuthPage extends Component {
   static contextType = AuthContext;
 
@@ -42,14 +61,7 @@ export class AuthPage extends Component {
     if (!this.state.isLogin) {
       promise = this.props.client
         .mutate({
-          mutation: gql`
-            mutation CreateUser($email: String!, $password: String!) {
-              createUser(userInput: { email: $email, password: $password }) {
-                _id
-                email
-              }
-            }
-          `,
+          mutation: CREATE_USER,
           variables: {
             email,
             password
@@ -57,15 +69,7 @@ export class AuthPage extends Component {
         })
         .then(() =>
           this.props.client.query({
-            query: gql`
-              query Login($email: String!, $password: String!) {
-                login(email: $email, password: $password) {
-                  userId
-                  token
-                  tokenExpiration
-                }
-              }
-            `,
+            query: LOGIN,
             variables: {
               email,
               password
@@ -74,15 +78,7 @@ export class AuthPage extends Component {
         );
     } else {
       promise = this.props.client.query({
-        query: gql`
-          query Login($email: String!, $password: String!) {
-            login(email: $email, password: $password) {
-              userId
-              token
-              tokenExpiration
-            }
-          }
-        `,
+        query: LOGIN,
         variables: {
           email,
           password

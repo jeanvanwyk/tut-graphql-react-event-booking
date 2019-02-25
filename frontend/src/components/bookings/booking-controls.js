@@ -15,7 +15,7 @@ export const BookingControls = props => (
 );
 
 BookingControls.propTypes = {
-  activeOutputType: PropTypes.bool,
+  activeOutputType: PropTypes.string,
   changeOutputTypeChart: PropTypes.func,
   changeOutputTypeList: PropTypes.func
 };

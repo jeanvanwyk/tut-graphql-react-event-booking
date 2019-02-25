@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
-import { withApollo } from 'react-apollo';
+import { Query, withApollo } from 'react-apollo';
 
 import BookingChart from '../components/bookings/booking-chart';
 import BookingControls from '../components/bookings/booking-controls';
@@ -20,7 +20,7 @@ const DELETE_BOOKING = gql`
   }
 `;
 
-const GET_BOOKINGS = gql`
+export const GET_BOOKINGS = gql`
   query {
     bookings {
       _id
@@ -42,7 +42,6 @@ export class BookingsPage extends Component {
   constructor(props) {
     super(props);
 
-    this.fetchBookings = this.fetchBookings.bind(this);
     this.deleteBookingHandler = this.deleteBookingHandler.bind(this);
     this.changeOutputTypeList = this.changeOutputType.bind(this, 'list');
     this.changeOutputTypeChart = this.changeOutputType.bind(this, 'chart');
@@ -50,19 +49,14 @@ export class BookingsPage extends Component {
 
   state = {
     bookings: [],
-    isLoading: false,
     outputType: 'list'
   };
 
-  componentDidMount() {
-    this.fetchBookings();
-  }
-
   deleteBookingHandler(bookingId) {
-    this.setState({ isLoading: true });
     this.props.client
       .mutate({
         mutation: DELETE_BOOKING,
+        refetchQueries: () => [{ query: GET_BOOKINGS }],
         variables: {
           id: bookingId
         }
@@ -70,28 +64,10 @@ export class BookingsPage extends Component {
       .then(() => {
         this.setState(prevState => {
           const updatedBookings = prevState.bookings.filter(booking => booking._id !== bookingId);
-          return { bookings: updatedBookings, isLoading: false };
+          return { bookings: updatedBookings };
         });
       })
       .catch(err => {
-        this.setState({ isLoading: false });
-        // eslint-disable-next-line no-console
-        console.error(err);
-      });
-  }
-
-  fetchBookings() {
-    this.setState({ isLoading: true });
-    this.props.client
-      .query({
-        query: GET_BOOKINGS
-      })
-      .then(resData => {
-        const bookings = resData.data.bookings;
-        this.setState({ bookings, isLoading: false });
-      })
-      .catch(err => {
-        this.setState({ isLoading: false });
         // eslint-disable-next-line no-console
         console.error(err);
       });
@@ -106,26 +82,30 @@ export class BookingsPage extends Component {
   }
 
   render() {
-    let content = <Spinner />;
-    if (!this.state.isLoading) {
-      content = (
-        <Fragment>
-          <BookingControls
-            activeOutputType={this.state.outputType}
-            changeOutputTypeChart={this.changeOutputTypeChart}
-            changeOutputTypeList={this.changeOutputTypeList}
-          />
-          <div>
-            {this.state.outputType === 'list' ? (
-              <BookingList bookings={this.state.bookings} onDelete={this.deleteBookingHandler} />
-            ) : (
-              <BookingChart bookings={this.state.bookings} />
-            )}
-          </div>
-        </Fragment>
-      );
-    }
-    return <Fragment>{content}</Fragment>;
+    return (
+      <Query query={GET_BOOKINGS}>
+        {({ loading, data }) =>
+          loading ? (
+            <Spinner />
+          ) : (
+            <Fragment>
+              <BookingControls
+                activeOutputType={this.state.outputType}
+                changeOutputTypeChart={this.changeOutputTypeChart}
+                changeOutputTypeList={this.changeOutputTypeList}
+              />
+              <div>
+                {this.state.outputType === 'list' ? (
+                  <BookingList bookings={data.bookings} onDelete={this.deleteBookingHandler} />
+                ) : (
+                  <BookingChart bookings={data.bookings} />
+                )}
+              </div>
+            </Fragment>
+          )
+        }
+      </Query>
+    );
   }
 }
 

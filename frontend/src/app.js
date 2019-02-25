@@ -23,7 +23,13 @@ class App extends Component {
     this.login = this.login.bind(this);
     this.logout = this.logout.bind(this);
 
-    const cache = new InMemoryCache();
+    const cache = new InMemoryCache({
+      cacheRedirects: {
+        Query: {
+          event: (_, args, { getCacheKey }) => getCacheKey({ __typename: 'Event', id: args.id })
+        }
+      }
+    });
 
     const authLink = setContext(this.injectAuth);
     const link = new HttpLink({ uri: 'http://localhost:8000/graphql' });
