@@ -1,4 +1,7 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import gql from 'graphql-tag';
+import { withApollo } from 'react-apollo';
 
 import AuthContext from '../context/auth-context';
 
@@ -33,50 +36,61 @@ export class AuthPage extends Component {
     }
 
     // Send a request to the backend
-    let requestBody = {
-      query: `
-        query Login($email: String!, $password: String!) {
-          login(email: $email, password: $password) {
-            userId
-            token
-            tokenExpiration
-          }
-        }`,
-      variables: {
-        email,
-        password
-      }
-    };
+
+    let promise = null;
 
     if (!this.state.isLogin) {
-      requestBody = {
-        query: `
-          mutation CreateUser($email: String!, $password: String!) {
-            createUser(userInput: { email: $email, password: $password }) {
-              _id
-              email
+      promise = this.props.client
+        .mutate({
+          mutation: gql`
+            mutation CreateUser($email: String!, $password: String!) {
+              createUser(userInput: { email: $email, password: $password }) {
+                _id
+                email
+              }
             }
-          }`,
+          `,
+          variables: {
+            email,
+            password
+          }
+        })
+        .then(() =>
+          this.props.client.query({
+            query: gql`
+              query Login($email: String!, $password: String!) {
+                login(email: $email, password: $password) {
+                  userId
+                  token
+                  tokenExpiration
+                }
+              }
+            `,
+            variables: {
+              email,
+              password
+            }
+          })
+        );
+    } else {
+      promise = this.props.client.query({
+        query: gql`
+          query Login($email: String!, $password: String!) {
+            login(email: $email, password: $password) {
+              userId
+              token
+              tokenExpiration
+            }
+          }
+        `,
         variables: {
           email,
           password
         }
-      };
+      });
     }
 
-    fetch('http://localhost:8000/graphql?query', {
-      method: 'POST',
-      body: JSON.stringify(requestBody),
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-      .then(res => {
-        if (res.status !== 200 && res.status !== 201) {
-          throw new Error('Failed');
-        }
-        return res.json();
-      })
+    promise
       .then(resData => {
         if (resData.data.login.token) {
           this.context.login(resData.data.login.token, resData.data.login.userId, resData.data.login.tokenExpiration);
@@ -110,4 +124,8 @@ export class AuthPage extends Component {
   }
 }
 
-export default AuthPage;
+AuthPage.propTypes = {
+  client: PropTypes.object
+};
+
+export default withApollo(AuthPage);

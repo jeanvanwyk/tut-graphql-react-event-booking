@@ -1,4 +1,7 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import gql from 'graphql-tag';
+import { withApollo } from 'react-apollo';
 
 import Backdrop from '../components/backdrop/backdrop';
 import Modal from '../components/modal/modal';
@@ -7,6 +10,48 @@ import Spinner from '../components/spinner/spinner';
 import AuthContext from '../context/auth-context';
 
 import './events.css';
+
+const EVENT_FRAGMENT = gql`
+  fragment EventFragment on Event {
+    _id
+    title
+    description
+    price
+    date
+  }
+`;
+
+const GET_EVENTS = gql`
+  query {
+    events {
+      ...EventFragment
+      creator {
+        _id
+        email
+      }
+    }
+  }
+  ${EVENT_FRAGMENT}
+`;
+
+const CREATE_EVENT = gql`
+  mutation CreateEvent($title: String!, $description: String!, $price: Float!, $date: String!) {
+    createEvent(eventInput: { title: $title, description: $description, price: $price, date: $date }) {
+      ...EventFragment
+    }
+  }
+  ${EVENT_FRAGMENT}
+`;
+
+const BOOK_EVENT = gql`
+  mutation BookEvent($eventId: ID!) {
+    bookEvent(eventId: $eventId) {
+      _id
+      createdAt
+      updatedAt
+    }
+  }
+`;
 
 export class EventsPage extends Component {
   static contextType = AuthContext;
@@ -49,34 +94,12 @@ export class EventsPage extends Component {
       this.setState({ selectedEvent: null });
       return;
     }
-    const requestBody = {
-      query: `
-        mutation BookEvent($eventId: ID!) {
-          bookEvent(eventId: $eventId) {
-            _id
-            createdAt
-            updatedAt
-          }
-        }`,
-      variables: {
-        eventId: this.state.selectedEvent._id
-      }
-    };
-    const token = this.context.token;
-
-    fetch('http://localhost:8000/graphql?query', {
-      method: 'POST',
-      body: JSON.stringify(requestBody),
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`
-      }
-    })
-      .then(res => {
-        if (res.status !== 200 && res.status !== 201) {
-          throw new Error('Failed');
+    this.props.client
+      .mutate({
+        mutation: BOOK_EVENT,
+        variables: {
+          eventId: this.state.selectedEvent._id
         }
-        return res.json();
       })
       .then(() => {
         this.setState({ selectedEvent: null });
@@ -89,35 +112,10 @@ export class EventsPage extends Component {
 
   fetchEvents() {
     this.setState({ isLoading: true });
-    const requestBody = {
-      query: `
-        query {
-          events {
-            _id
-            title
-            description
-            price
-            date
-            creator {
-              _id
-              email
-            }
-          }
-        }`
-    };
 
-    fetch('http://localhost:8000/graphql?query', {
-      method: 'POST',
-      body: JSON.stringify(requestBody),
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-      .then(res => {
-        if (res.status !== 200 && res.status !== 201) {
-          throw new Error('Failed');
-        }
-        return res.json();
+    this.props.client
+      .query({
+        query: GET_EVENTS
       })
       .then(resData => {
         const events = resData.data.events;
@@ -158,39 +156,20 @@ export class EventsPage extends Component {
     if (title.trim().length === 0 || price <= 0 || date.trim().length === 0 || description.trim().length === 0) {
       return;
     }
-    const requestBody = {
-      query: `
-        mutation CreateEvent($title: String!, $description: String!, $price: Float!, $date: String!) {
-          createEvent(eventInput: { title: $title, description: $description, price: $price, date: $date }) {
-            _id
-            title
-            description
-            price
-            date
+    this.props.client
+      .mutate({
+        mutation: CREATE_EVENT,
+        variables: {
+          title,
+          description,
+          price,
+          date
+        },
+        refetchQueries: [
+          {
+            query: GET_EVENTS
           }
-        }`,
-      variables: {
-        title,
-        description,
-        price,
-        date
-      }
-    };
-    const token = this.context.token;
-
-    fetch('http://localhost:8000/graphql?query', {
-      method: 'POST',
-      body: JSON.stringify(requestBody),
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`
-      }
-    })
-      .then(res => {
-        if (res.status !== 200 && res.status !== 201) {
-          throw new Error('Failed');
-        }
-        return res.json();
+        ]
       })
       .then(resData => {
         this.setState(prevState => {
@@ -207,6 +186,13 @@ export class EventsPage extends Component {
               }
             }
           ];
+          // Alternative to refetchQueries
+          // this.props.client.writeQuery({
+          //   query: GET_EVENTS,
+          //   data: {
+          //     events: updatedEvents
+          //   }
+          // });
           return { creating: false, events: updatedEvents };
         });
       })
@@ -291,4 +277,8 @@ export class EventsPage extends Component {
   }
 }
 
-export default EventsPage;
+EventsPage.propTypes = {
+  client: PropTypes.object
+};
+
+export default withApollo(EventsPage);
