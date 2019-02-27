@@ -2,6 +2,18 @@ const Event = require('../../models/event');
 const User = require('../../models/user');
 const { transformEvent } = require('./util');
 
+const event = async args => {
+  try {
+    const event = await Event.findById(args.eventId)
+    if (!event) {
+      throw new Error('Unknown event!');
+    }
+    return transformEvent(event);
+  } catch (err) {
+    throw err;
+  }
+};
+
 const events = async () => {
   try {
     const events = await Event.find();
@@ -41,5 +53,6 @@ const createEvent = async (args, req) => {
 
 module.exports = {
   createEvent,
+  event,
   events
 };

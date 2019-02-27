@@ -74,6 +74,12 @@ const RootQuery = new GraphQLObjectType({
   name: 'RootQuery',
   fields: {
     bookings: { type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(Booking))) },
+    event: {
+      type: Event,
+      args: {
+        eventId: { type: new GraphQLNonNull(GraphQLString) }
+      }
+    },
     events: { type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(Event))) },
     users: { type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(User))) },
     login: {
