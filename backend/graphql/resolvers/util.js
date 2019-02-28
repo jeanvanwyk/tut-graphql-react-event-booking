@@ -1,4 +1,5 @@
 const DataLoader = require('dataloader');
+const { ApolloError } = require('apollo-server');
 
 const { dateToString } = require('../../helpers/date');
 const Event = require('../../models/event');
@@ -43,7 +44,7 @@ const populateEvent = async eventId => {
   try {
     const event = await eventLoader.load(eventId.toString());
     if (!event) {
-      throw new Error('Event not found');
+      throw new ApolloError('Event not found');
     }
     return event;
   } catch (err) {
@@ -69,7 +70,7 @@ const populateUser = async userId => {
   try {
     const user = await userLoader.load(userId.toString());
     if (!user) {
-      throw new Error('User not found');
+      throw new ApolloError('User not found');
     }
     return user;
   } catch (err) {

@@ -1,14 +1,15 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const { AuthenticationError, ForbiddenError, UserInputError } = require('apollo-server');
 
 const User = require('../../models/user');
 const { transformUser } = require('./util');
 
-const createUser = async args => {
+const createUser = async (parent, args) => {
   try {
     const existingUser = await User.findOne({ email: args.userInput.email });
     if (existingUser) {
-      throw new Error('User exists already!');
+      throw new UserInputError('User exists already!');
     }
     const hashedPassword = await bcrypt.hash(args.userInput.password, 12);
     const newUser = new User({
@@ -22,11 +23,11 @@ const createUser = async args => {
   }
 };
 
-const users = async (args, req) => {
-  if (!req.isAuth) {
-    throw new Error('Unauthenticated!');
+const users = async (parent, args, context) => {
+  if (!context.isAuth) {
+    throw new AuthenticationError('Unauthenticated!');
   }
-  throw new Error('Debug only function!');
+  throw new ForbiddenError('Debug only function!');
   // try {
   //   const users = await User.find();
   //   return users.map(user => {
@@ -37,17 +38,18 @@ const users = async (args, req) => {
   // }
 };
 
-const login = async ({ email, password }) => {
+const login = async (parent, args) => {
+  const { email, password } = args;
   try {
     const user = await User.findOne({ email });
     if (!user) {
       // Security - information leakage
-      throw new Error('User does not exist!');
+      throw new UserInputError('User does not exist!');
     }
     const isEqual = await bcrypt.compare(password, user.password);
     if (!isEqual) {
       // Security - information leakage
-      throw new Error('User password incorrect!');
+      throw new UserInputError('User password incorrect!');
     }
     const payload = { userId: user.id, email: user.email };
     const secret = 'somesupersecretkey';

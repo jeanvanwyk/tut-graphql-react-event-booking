@@ -1,13 +1,10 @@
 const bodyParser = require('body-parser');
 const express = require('express');
-const graphqlHttp = require('express-graphql');
+const { ApolloServer } = require('apollo-server-express');
 const mongoose = require('mongoose');
 
-const rootValue = require('./graphql/resolvers');
-const schema = require('./graphql/schema');
-// const altSchema = require('./graphql/schema/alternative');
-// const { printSchema } = require('graphql');
-// console.log('-----', printSchema(altSchema));
+const resolvers = require('./graphql/resolvers');
+const typeDefs = require('./graphql/schema');
 const isAuth = require('./middleware/is-auth');
 
 const app = express();
@@ -27,14 +24,17 @@ app.use((req, res, next) => {
 
 app.use(isAuth);
 
-app.use(
-  '/graphql',
-  graphqlHttp({
-    schema,
-    rootValue,
-    graphiql: true
+const server = new ApolloServer({
+  typeDefs,
+  resolvers,
+  context: ({ req }) => ({
+    isAuth: req.isAuth,
+    userId: req.userId
   })
-);
+});
+
+server.applyMiddleware({ app }); // app is from an existing express app
+
 const mongooseUrl = `mongodb+srv://${process.env.MONGO_USER}:${
   process.env.MONGO_PASSWORD
 }@graphql-cluster-4lyvf.mongodb.net/${process.env.MONGO_DB}?retryWrites=true`;
@@ -42,7 +42,9 @@ const mongooseUrl = `mongodb+srv://${process.env.MONGO_USER}:${
 mongoose
   .connect(mongooseUrl)
   .then(() => {
-    app.listen(8000);
+    app.listen({ port: 8000 }, () =>
+      console.log(`🚀 Server ready at http://localhost:8000${server.graphqlPath}`)
+    )
   })
   .catch(err => {
     // eslint-disable-next-line no-console

@@ -1,13 +1,15 @@
+const { AuthenticationError, UserInputError } = require('apollo-server');
+
 const Booking = require('../../models/booking');
 const Event = require('../../models/event');
 const { transformEvent, transformBooking } = require('./util');
 
-const bookings = async (args, req) => {
-  if (!req.isAuth) {
-    throw new Error('Unauthenticated!');
+const bookings = async (parent, args, context) => {
+  if (!context.isAuth) {
+    throw new AuthenticationError('Unauthenticated!');
   }
   try {
-    const bookings = await Booking.find({ user: req.userId });
+    const bookings = await Booking.find({ user: context.userId });
     return bookings.map(booking => {
       return transformBooking(booking);
     });
@@ -16,18 +18,18 @@ const bookings = async (args, req) => {
   }
 };
 
-const bookEvent = async (args, req) => {
-  if (!req.isAuth) {
-    throw new Error('Unauthenticated!');
+const bookEvent = async (parent, args, context) => {
+  if (!context.isAuth) {
+    throw new AuthenticationError('Unauthenticated!');
   }
   try {
     const fetchedEvent = await Event.findById(args.eventId);
     if (!fetchedEvent) {
-      throw new Error('Event does not exist');
+      throw new UserInputError('Event does not exist');
     }
     const booking = new Booking({
       event: fetchedEvent,
-      user: req.userId
+      user: context.userId
     });
     const result = await booking.save();
     return transformBooking(result);
@@ -36,14 +38,14 @@ const bookEvent = async (args, req) => {
   }
 };
 
-const cancelBooking = async (args, req) => {
-  if (!req.isAuth) {
-    throw new Error('Unauthenticated!');
+const cancelBooking = async (parent, args, context) => {
+  if (!context.isAuth) {
+    throw new AuthenticationError('Unauthenticated!');
   }
   try {
     const booking = await Booking.findById(args.bookingId).populate('event');
     if (!booking) {
-      throw new Error('Unknown booking');
+      throw new UserInputError('Unknown booking');
     }
     const event = transformEvent(booking.event);
     await Booking.deleteOne({ _id: args.bookingId });
