@@ -1,15 +1,14 @@
 const { AuthenticationError, UserInputError } = require('apollo-server');
 
-const Booking = require('../../models/booking');
-const Event = require('../../models/event');
-const { transformEvent, transformBooking } = require('./util');
+const { Booking, Event } = require('../../db');
+const { transformBooking, transformEvent } = require('./util');
 
 const bookings = async (parent, args, context) => {
   if (!context.isAuth) {
     throw new AuthenticationError('Unauthenticated!');
   }
   try {
-    const bookings = await Booking.find({ user: context.userId });
+    const bookings = await Booking.findAll({ where: { userId: context.userId } });
     return bookings.map(booking => {
       return transformBooking(booking);
     });
@@ -27,12 +26,12 @@ const bookEvent = async (parent, args, context) => {
     if (!fetchedEvent) {
       throw new UserInputError('Event does not exist');
     }
-    const booking = new Booking({
-      event: fetchedEvent,
-      user: context.userId
+    const booking = Booking.build({
+      eventId: args.eventId,
+      userId: context.userId
     });
-    const result = await booking.save();
-    return transformBooking(result);
+    await booking.save();
+    return transformBooking(booking);
   } catch (err) {
     throw err;
   }
@@ -43,13 +42,13 @@ const cancelBooking = async (parent, args, context) => {
     throw new AuthenticationError('Unauthenticated!');
   }
   try {
-    const booking = await Booking.findById(args.bookingId).populate('event');
+    const booking = await Booking.findById(args.bookingId);
     if (!booking) {
       throw new UserInputError('Unknown booking');
     }
-    const event = transformEvent(booking.event);
-    await Booking.deleteOne({ _id: args.bookingId });
-    return event;
+    const event = await Event.findById(booking.eventId);
+    await Booking.destroy({ where: { id: args.bookingId } });
+    return transformEvent(event);
   } catch (err) {
     throw err;
   }

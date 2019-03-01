@@ -45,7 +45,7 @@ module.exports = gql`
 
   type RootQuery {
     bookings: [Booking!]!
-    event(eventId: String!): Event,
+    event(eventId: String!): Event
     events: [Event!]!
     users: [User!]!
     login(email: String!, password: String!): AuthData!

@@ -1,9 +1,9 @@
 const DataLoader = require('dataloader');
 const { ApolloError } = require('apollo-server');
+const { Op } = require('sequelize');
 
 const { dateToString } = require('../../helpers/date');
-const Event = require('../../models/event');
-const User = require('../../models/user');
+const { Event, User } = require('../../db');
 
 const eventLoader = new DataLoader(eventIds => {
   return populateEvents(eventIds);
@@ -14,35 +14,31 @@ const userLoader = new DataLoader(userIds => {
 });
 
 const transformBooking = booking => ({
-  ...booking._doc,
+  ...booking.dataValues,
   _id: booking.id,
-  event: populateEvent.bind(this, booking.event),
-  user: populateUser.bind(this, booking.user),
+  event: populateEvent.bind(this, booking.eventId),
+  user: populateUser.bind(this, booking.userId),
   createdAt: dateToString(booking.createdAt),
   updatedAt: dateToString(booking.updatedAt)
 });
 
-const transformEvent = event => {
-  return {
-    ...event._doc,
-    _id: event.id,
-    date: dateToString(event.date),
-    creator: populateUser.bind(this, event.creator)
-  };
-};
+const transformEvent = event => ({
+  ...event.dataValues,
+  _id: event.id,
+  date: dateToString(event.date),
+  creator: populateUser.bind(this, event.creatorId)
+});
 
-const transformUser = user => {
-  return {
-    ...user._doc,
-    _id: user.id,
-    password: null,
-    createdEvents: () => eventLoader.loadMany(user.createdEvents)
-  };
-};
+const transformUser = user => ({
+  ...user.dataValues,
+  _id: user.id,
+  password: null,
+  createdEvents: () => eventLoader.loadMany(user.createdEvents)
+});
 
 const populateEvent = async eventId => {
   try {
-    const event = await eventLoader.load(eventId.toString());
+    const event = await eventLoader.load(eventId);
     if (!event) {
       throw new ApolloError('Event not found');
     }
@@ -54,9 +50,9 @@ const populateEvent = async eventId => {
 
 const populateEvents = async eventIds => {
   try {
-    const events = await Event.find({ _id: { $in: eventIds } });
+    const events = await Event.findAll({ where: { id: { [Op.in]: eventIds } } });
     events.sort((a, b) => {
-      return eventIds.indexOf(a._id.toString()) - eventIds.indexOf(b._id.toString());
+      return eventIds.indexOf(a.id) - eventIds.indexOf(b.id);
     });
     return events.map(event => {
       return transformEvent(event);
@@ -68,7 +64,7 @@ const populateEvents = async eventIds => {
 
 const populateUser = async userId => {
   try {
-    const user = await userLoader.load(userId.toString());
+    const user = await userLoader.load(userId);
     if (!user) {
       throw new ApolloError('User not found');
     }
@@ -80,9 +76,9 @@ const populateUser = async userId => {
 
 const populateUsers = async userIds => {
   try {
-    const users = await User.find({ _id: { $in: userIds } });
+    const users = await User.findAll({ where: { id: { [Op.in]: userIds } } });
     users.sort((a, b) => {
-      return userIds.indexOf(a._id.toString()) - userIds.indexOf(b._id.toString());
+      return userIds.indexOf(a.id) - userIds.indexOf(b.id);
     });
     return users.map(user => {
       return transformUser(user);

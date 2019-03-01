@@ -1,7 +1,9 @@
 const bodyParser = require('body-parser');
 const express = require('express');
 const { ApolloServer } = require('apollo-server-express');
-const mongoose = require('mongoose');
+
+const { sequelize } = require('./db');
+const { createData } = require('./db/create');
 
 const resolvers = require('./graphql/resolvers');
 const typeDefs = require('./graphql/schema');
@@ -35,18 +37,14 @@ const server = new ApolloServer({
 
 server.applyMiddleware({ app }); // app is from an existing express app
 
-const mongooseUrl = `mongodb+srv://${process.env.MONGO_USER}:${
-  process.env.MONGO_PASSWORD
-}@graphql-cluster-4lyvf.mongodb.net/${process.env.MONGO_DB}?retryWrites=true`;
-
-mongoose
-  .connect(mongooseUrl)
+sequelize
+  .sync()
   .then(() => {
-    app.listen({ port: 8000 }, () =>
-      console.log(`🚀 Server ready at http://localhost:8000${server.graphqlPath}`)
-    )
+    return createData();
+  })
+  .then(() => {
+    app.listen({ port: 8000 }, () => console.log(`🚀 Server ready at http://localhost:8000${server.graphqlPath}`));
   })
   .catch(err => {
-    // eslint-disable-next-line no-console
     console.error(err);
   });

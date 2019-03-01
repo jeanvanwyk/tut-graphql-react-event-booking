@@ -7,7 +7,8 @@ import './booking-chart.css';
 const BOOKING_BUCKETS = {
   Cheap: { min: 0, max: 100 },
   Normal: { min: 100, max: 200 },
-  Expensive: { min: 200, max: 10000000 }
+  Expensive: { min: 200, max: 300 },
+  'Very Expensive': { min: 300, max: 10000000 }
 };
 
 export class BookingChart extends Component {
