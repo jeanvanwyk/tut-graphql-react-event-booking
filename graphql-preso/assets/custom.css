@@ -1,0 +1,66 @@
+.reveal section img {
+  border: 0;
+  box-shadow: none;
+}
+
+.reveal pre {
+  max-height: 400px;
+}
+
+.reveal pre code {
+  max-height: 4000px;
+}
+
+.reveal h1 {
+  color: #0052a0;
+  text-transform: none;
+}
+
+.reveal h2 {
+  color: #d11470;
+  text-transform: none;
+}
+
+.reveal h3 {
+  color: #9ca2ab;
+  text-transform: none;
+}
+
+.reveal h4 {
+  color: #0052a0;
+  text-transform: none;
+}
+
+.reveal h5 {
+  color: #1e80b5;
+  text-transform: none;
+}
+
+.reveal sup {
+  vertical-align: super;
+  font-size: 28px;
+}
+
+.reveal .slide-background {
+  width: 150px;
+  height: 36px;
+  background-image: url(./logo.svg);
+  position: absolute;
+  right: 20px;
+  bottom: 20px;
+}
+
+.reveal .progress span {
+  background: #d11470;
+}
+
+.reveal a,
+.reveal a:hover {
+  color: #0052a0;
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+img[alt="Lighthouse"] {
+  height: 648px;
+}

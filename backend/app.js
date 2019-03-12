@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const bodyParser = require('body-parser');
 const express = require('express');
 const graphqlHttp = require('express-graphql');
@@ -5,9 +6,6 @@ const mongoose = require('mongoose');
 
 const rootValue = require('./graphql/resolvers');
 const schema = require('./graphql/schema');
-// const altSchema = require('./graphql/schema/alternative');
-// const { printSchema } = require('graphql');
-// console.log('-----', printSchema(altSchema));
 const isAuth = require('./middleware/is-auth');
 
 const app = express();
@@ -42,9 +40,8 @@ const mongooseUrl = `mongodb+srv://${process.env.MONGO_USER}:${
 mongoose
   .connect(mongooseUrl)
   .then(() => {
-    app.listen(8000);
+    app.listen(8000, () => console.log('🚀 Server ready at http://localhost:8000/graphql'));
   })
   .catch(err => {
-    // eslint-disable-next-line no-console
     console.error(err);
   });

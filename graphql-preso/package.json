@@ -1,0 +1,22 @@
+{
+  "name": "pwa-presentation",
+  "version": "1.0.0",
+  "description": "PWA Presentation",
+  "main": "index.js",
+  "scripts": {
+    "start": "serve -p 1234 ./",
+    "serve": "serve -p 1234 ./",
+    "build": "node index.js"
+  },
+  "keywords": [
+    "markdown",
+    "reveal.js"
+  ],
+  "author": "Jeán van Wyk",
+  "license": "ISC",
+  "dependencies": {
+    "@shd101wyy/mume": "^0.3.6",
+    "replace-in-file": "^3.4.3",
+    "serve": "^10.1.2"
+  }
+}
