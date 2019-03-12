@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const bodyParser = require('body-parser');
 const express = require('express');
 const { ApolloServer } = require('apollo-server-express');
