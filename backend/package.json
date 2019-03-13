@@ -20,12 +20,12 @@
     "dataloader": "^1.4.0",
     "express": "^4.16.4",
     "express-graphql": "^0.7.1",
-    "graphql": "^14.0.2",
-    "jsonwebtoken": "^8.4.0",
-    "mongoose": "^5.4.0"
+    "graphql": "^14.1.1",
+    "jsonwebtoken": "^8.5.0",
+    "mongoose": "^5.4.19"
   },
   "devDependencies": {
-    "eslint": "^5.12.1",
+    "eslint": "^5.15.1",
     "eslint-plugin-node": "^8.0.1",
     "nodemon": "^1.18.9",
     "prettier-eslint-cli": "^4.7.1"

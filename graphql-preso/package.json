@@ -15,8 +15,8 @@
   "author": "Jeán van Wyk",
   "license": "ISC",
   "dependencies": {
-    "@shd101wyy/mume": "^0.3.6",
-    "replace-in-file": "^3.4.3",
+    "@shd101wyy/mume": "^0.3.7",
+    "replace-in-file": "^3.4.4",
     "serve": "^10.1.2"
   }
 }

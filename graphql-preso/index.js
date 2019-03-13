@@ -106,8 +106,8 @@ async function main() {
   const replace = require('replace-in-file');
   const options = {
     files: 'graphql.html',
-    from: [/reveal.js\/3.4.1/g, /\\n/g, /..\/..\/lib\/font\/source-sans-pro\/source-sans-pro.css/],
-    to: ['reveal.js/3.7.0', '\n', 'https://fonts.googleapis.com/css?family=Source+Sans+Pro'],
+    from: [/reveal.js\/3.4.1/g, /\\n/g, /..\/..\/lib\/font\/source-sans-pro\/source-sans-pro.css/g, /assets\\/],
+    to: ['reveal.js/3.7.0', '\n', 'https://fonts.googleapis.com/css?family=Source+Sans+Pro', 'assets/'],
   };
   console.log('TODO Update the version of reveal.js and change <br/>\\n to <br/>', foo);
 
